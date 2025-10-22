@@ -6,7 +6,7 @@ const todosFile = "todos.json"
 
 export const addTodo = (req, res) => {
     const { text, completed } = req.body
-    if(!text) {
+    if(!text.trim() || typeof completed !== 'boolean') {
         return res.status(400).send({
             error: "Invalid body"
         })
