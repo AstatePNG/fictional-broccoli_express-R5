@@ -13,10 +13,10 @@ export const validateBody = (schema) => {
                     details: error.issues.map((issue) => issue.message)
                 })
             }
+            res.status(500).send({
+                error: 'Internal server error 😭😭😭'
+            })
         }
-        res.status(500).send({
-            error: 'Internal server error 😭😭😭'
-        })
     }
 }
 
@@ -33,9 +33,9 @@ export const validateParams = (schema) => {
                     details: error.issues.map((issue) => issue.message)
                 })
             }
+            res.status(500).send({
+                error: 'Internal server error 😭😭😭'
+            })
         }
-        res.status(500).send({
-            error: 'Internal server error 😭😭😭'
-        })
     }
 }
