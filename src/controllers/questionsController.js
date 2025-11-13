@@ -3,7 +3,6 @@ import { db } from "../db/database.js"
 import { questionsTable } from "../db/schema.js"
 
 export const getAllQuestions = async (req, res) => {
-
     try {
         const questions = await db.select().from(questionsTable).orderBy('createdAt', 'desc')
         res.status(200).json(questions)

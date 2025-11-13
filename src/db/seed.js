@@ -1,33 +1,49 @@
+import { email } from 'zod'
 import { db } from './database.js'
-import { questionsTable } from './schema.js'
+import { questionsTable, usersTable } from './schema.js'
+import bcrypt from 'bcrypt'
 
 async function seed() {
     try {
         console.log('Database seeding starting ... 😎😎😎😎😎')
 
         await db.delete(questionsTable)
+		await db.delete(usersTable)
 
-        const seedQuestions = [
+        const seedUsers = [
+			{
+				email: "super.mail@mail.fr",
+				username: "SuperMail",
+				password: bcrypt.hashSync("mot2pass", 10)
+			},
+			{
+				email: "fandutdf@fanmail.com",
+				username: "EricPorcq",
+				password: bcrypt.hashSync("Caen2025Forever", 10)
+			}
+		]
+
+		const usersIds = await db.insert(usersTable).values(seedUsers).returning({ id: usersTable.id})
+
+		const seedQuestions = [
 			{
 				question: 'Quelle est la capitale de la France?',
 				answer: 'Paris',
-				difficulty: 'easy'
+				difficulty: 'easy',
+				createdBy: usersIds[0].id
 			},
 			{
 				question: 'Quel est le plus grand océan du monde?',
 				answer: "L'océan Pacifique",
-				difficulty: 'medium'
+				difficulty: 'medium',
+				createdBy: usersIds[0].id
 			},
 			{
 				question: 'Qui a écrit "Les Misérables"?',
 				answer: 'Victor Hugo',
-				difficulty: 'difficult'
-			},
-            {
-                question: 'Qui a du caca kaki collé au cucu ?',
-                answer: 'XXX. Il revient il va aux toilettes',
-                difficulty: 'medium'
-            }
+				difficulty: 'difficult',
+				createdBy: usersIds[1].id
+			}
 		]
 
         await db.insert(questionsTable).values(seedQuestions)
