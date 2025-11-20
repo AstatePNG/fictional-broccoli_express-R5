@@ -15,14 +15,14 @@ export const getAllQuestions = async (req, res) => {
 }
 
 export const getQuestion = async (req, res) => {
-    const { id } = req.params
-
     try {
+        const { id } = req.params
+    
         const [question] = await db.select().from(questionsTable).where(eq(questionsTable.id, id))
         
         if(!question) {
             return res.status(404).json({
-                error: `Question ${id} doesn't exist`
+                error: `Question ${id} does not exist`
             })
         }
 
@@ -30,19 +30,20 @@ export const getQuestion = async (req, res) => {
     } catch (err) {
         console.error(err)
         res.status(500).json({
-            error: "Failed to fetch questions"
+            error: "Failed to fetch required question"
         })
     }
 }
 
 export const addQuestion = async (req, res) => {
-    const { question, answer, difficulty } = req.body
-
     try {
+        const { question, answer, difficulty } = req.body
+
         const [newQuestion] = await db.insert(questionsTable).values({
             question: question,
             answer: answer,
-            difficulty: difficulty
+            difficulty: difficulty,
+            createdBy: req.user.userId
         }).returning()
         return res.status(201).json({
             message: "Question created successfully",
@@ -57,14 +58,14 @@ export const addQuestion = async (req, res) => {
 }
 
 export const deleteQuestion = async (req, res) => {
-    const { id } = req.params
-
     try {
-        const [deletedQuestion] = await db.delete(questionsTable).where(eq(questionsTable.id, id)).returning()
+        const { id } = req.params
+
+        const [deletedQuestion] = await db.delete(questionsTable).where(eq(questionsTable.id, id)).where(eq(questionsTable.createdBy, req.user.userId)).returning()
 
         if(!deletedQuestion) {
-            return res.status(404).json({
-                error: `Question ${id} doesn't exist`
+            return res.status(403).json({
+                error: `You didn't create question ${id}`
             })
         }
 

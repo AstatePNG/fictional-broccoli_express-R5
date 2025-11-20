@@ -2,8 +2,11 @@ import { Router } from "express"
 import { addQuestion, deleteQuestion, getAllQuestions, getQuestion } from "../controllers/questionsController.js"
 import { validateBody, validateParams } from "../middleware/validation.js"
 import { createQuestionSchema, questionIdSchema } from "../models/question.js"
+import { authenticateToken } from "../middleware/authenticateToken.js"
 
 const router = Router()
+
+router.use(authenticateToken)
 
 router.get('/', getAllQuestions)
 router.get('/:id', validateParams(questionIdSchema), getQuestion)

@@ -1,6 +1,6 @@
 import { sqliteTable, text, integer } from 'drizzle-orm/sqlite-core'
 import { randomUUID } from 'crypto'
-import { email } from 'zod'
+import { title } from 'process'
 
 export const questionsTable = sqliteTable('question', {
     id: text()
@@ -13,6 +13,8 @@ export const questionsTable = sqliteTable('question', {
     difficulty: text({ enum: ['easy', 'medium', 'difficult']})
         .notNull()
         .default('easy'),
+    category: integer()
+        .references(() => categoriesTable.id, { onDelete: 'cascade' }),
     createdAt: integer('created_at', { mode: 'timestamp' })
         .notNull()
         .$defaultFn(() => new Date()),
@@ -32,5 +34,17 @@ export const usersTable = sqliteTable('user', {
         .notNull(),
     username: text({length: 30})
         .notNull()
-        .unique()
+        .unique(),
+    role: text({lenght: 5})
+        .notNull()
+        .$defaultFn(() => 'USER')
+})
+
+export const categoriesTable = sqliteTable('category', {
+    id: integer()
+        .primaryKey(),
+    title: text({length: 50})
+        .notNull(),
+    description: text({length: 500})
+        .notNull()
 })
